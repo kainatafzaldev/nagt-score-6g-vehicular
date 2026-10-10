@@ -4,18 +4,18 @@ Reference implementation accompanying the paper *"NAGT-Score: A Security Scoring
 
 This repository contains:
 
-* A minimal reverse-mode automatic-differentiation engine written in NumPy (`src/autograd.py`), gradient-checked against numerical derivatives (`src/test_autograd.py`).
-* NAGT-Score's four architectural components — a learnable noise-aware feature-weighting gate, a graph-attention (GAT) encoder, a Transformer sequence encoder, and four multi-task prediction heads (`src/models.py`).
-* Data loading, windowing, and per-vehicle sequence construction for the VeReMi-style highway V2X dataset (`src/data_prep.py`).
-* The full training/evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`src/main.py`).
-* Analysis scripts used in the paper: result summary (`src/summarize_results.py`), evaluated-subset check (`src/check_eval_subset.py`), and the supplementary feature-dependence check (`src/supplementary_gb.py`).
+* A minimal reverse-mode automatic-differentiation engine written in NumPy (`autograd.py`), gradient-checked against numerical derivatives (`test_autograd.py`).
+* NAGT-Score's four architectural components - a learnable noise-aware feature-weighting gate, a graph-attention (GAT) encoder, a Transformer sequence encoder, and four multi-task prediction heads (`models.py`).
+* Data loading, windowing, and per-vehicle sequence construction for the VeReMi-style highway V2X dataset (`data_prep.py`).
+* The full training/evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`main.py`).
+* Analysis scripts used in the paper: result summary (`summarize_results.py`), evaluated-subset check (`check_eval_subset.py`), and the supplementary feature-dependence check (`supplementary_gb.py`).
 * The per-seed results used in the paper (`results_multiseed.json`).
 
 ## Why NumPy instead of PyTorch/TensorFlow?
 
-This reference implementation was developed and run on a CPU-only machine with no GPU and insufficient disk space for a full deep-learning framework install. Rather than skip gradient verification, a small autodiff engine was written from scratch and checked against finite-difference numerical gradients (see `src/test_autograd.py`).
+This reference implementation was developed and run on a CPU-only machine with no GPU and insufficient disk space for a full deep-learning framework install. Rather than skip gradient verification, a small autodiff engine was written from scratch and checked against finite-difference numerical gradients (see `test_autograd.py`).
 
-All five models (NAGT-Score and the four baselines) use single-layer graph, attention, and recurrent modules for this reason — see the paper's Discussion and Limitations section. Deeper, multi-layer, GPU-trained variants are natural future work.
+All five models (NAGT-Score and the four baselines) use single-layer graph, attention, and recurrent modules for this reason - see the paper's Discussion and Limitations section. Deeper, multi-layer, GPU-trained variants are natural future work.
 
 ## Requirements
 
@@ -35,8 +35,8 @@ pip install -r requirements.txt
 
 The experiments use the **NAGT-V2X Benchmark Dataset (NVBD)**, a *simulated*, VeReMi-style, message-level V2X dataset (one highway scenario, one Constant-Position-Offset attack). The dataset is **not stored in this repository** (about 68 MB).
 
-* Dataset download: **`<add Zenodo link / DOI here>`**
-* Dataset license: **`<add license here>`**
+* Dataset download: https://doi.org/10.5281/zenodo.23278351 (file `dataset.zip`; unzip it to get `dataset.csv`)
+* Dataset license: CC BY 4.0
 
 The CSV should follow the schema described in the paper's Dataset section, including:
 
@@ -51,7 +51,7 @@ The CSV should follow the schema described in the paper's Dataset section, inclu
 * `split` (Train / Validation / Test)
 * `split_rho`, `split_beta`, `split_gamma`, `split_R0`, `split_pi`
 
-Download the CSV and point `DATA_PATH` to it, for example:
+Download `dataset.zip`, unzip it to get `dataset.csv`, and point `DATA_PATH` to it, for example:
 
 ```bash
 DATA_PATH=/path/to/dataset.csv
@@ -61,12 +61,11 @@ If `DATA_PATH` is not set, `main.py` looks for `./dataset.csv` in the folder you
 
 ## Running
 
-Run these commands from the repository folder.
+Run these commands from the repository folder (on Windows, use `py` instead of `python3`).
 
 ### Single seed
 
 ```bash
-cd src
 DATA_PATH=/path/to/dataset.csv EPOCHS=15 SEEDS=0 python3 main.py
 ```
 
@@ -75,7 +74,6 @@ DATA_PATH=/path/to/dataset.csv EPOCHS=15 SEEDS=0 python3 main.py
 For statistical variation across five seeds:
 
 ```bash
-cd src
 DATA_PATH=/path/to/dataset.csv SEEDS=0,1,2,3,4 EPOCHS=15 python3 main.py
 ```
 
@@ -92,19 +90,17 @@ To write results elsewhere, set `OUT_PATH=/some/path.json`.
 OUT_PATH=debug_results.json EPOCHS=1 SEEDS=0 python3 main.py
 ```
 
-### Mean ± standard deviation
+### Mean +- standard deviation
 
-To compute the mean ± sample standard deviation over seeds reported in the paper:
+To compute the mean +- sample standard deviation over seeds reported in the paper (this also writes `model_comparison.csv`):
 
 ```bash
-cd src
-python3 summarize_results.py ../results_multiseed.json
+python3 summarize_results.py results_multiseed.json
 ```
 
 ### Additional checks
 
 ```bash
-cd src
 DATA_PATH=/path/to/dataset.csv python3 check_eval_subset.py     # messages actually evaluated after sequence truncation
 DATA_PATH=/path/to/dataset.csv python3 supplementary_gb.py      # feature-dependence check (gradient boosting)
 ```
@@ -120,17 +116,17 @@ DATA_PATH=/path/to/dataset.csv python3 supplementary_gb.py      # feature-depend
 ## Repository Structure
 
 ```text
-src/
-  autograd.py            # Reverse-mode autodiff engine, Tensor, Adam optimizer, losses
-  models.py              # NoiseGate, GATLayer, LSTM, SelfAttentionLayer, MultiHead
-  data_prep.py           # CSV loading, windowing, per-vehicle sequence construction
-  main.py                # Training/evaluation pipeline for all 5 models
-  summarize_results.py   # Mean +- std over seeds from results_multiseed.json
-  check_eval_subset.py   # Evaluated-message subset and baseline check
-  supplementary_gb.py    # Supplementary feature-dependence check
-  test_autograd.py       # Gradient check of the autodiff engine
+autograd.py              # Reverse-mode autodiff engine, Tensor, Adam optimizer, losses
+models.py                # NoiseGate, GATLayer, LSTM, SelfAttentionLayer, MultiHead
+data_prep.py             # CSV loading, windowing, per-vehicle sequence construction
+main.py                  # Training/evaluation pipeline for all 5 models
+summarize_results.py     # Mean +- std over seeds; writes model_comparison.csv
+check_eval_subset.py     # Evaluated-message subset and baseline check
+supplementary_gb.py      # Supplementary feature-dependence check
+test_autograd.py         # Gradient check of the autodiff engine
 
 results_multiseed.json   # Per-seed results reported in the paper
+model_comparison.csv     # Summary table of the multi-seed results
 requirements.txt         # Python dependencies
 LICENSE                  # MIT License
 ```
@@ -143,4 +139,4 @@ If you use this code, please cite the accompanying paper:
 
 ## License
 
-MIT License — see `LICENSE`.
+MIT License - see `LICENSE`.
