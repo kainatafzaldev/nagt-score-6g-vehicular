@@ -140,3 +140,7 @@ If you use this code, please cite the accompanying paper:
 ## License
 
 MIT License - see `LICENSE`.
+## Reproducing Tables X and XI
+Set the environment variable DROP_LEAKY=1 to run without susceptible_previous_window (reproduces Table XI).
+results_original/results_multiseed_with_leaky.json is the run reported in Table X; results_original/results_multiseed_no_leaky.json is Table XI; results_multiseed.json is an earlier run.
+compare_runs.py prints the paired comparisons reported in the paper.
