@@ -1,4 +1,5 @@
-﻿import json, time, gc
+from data_prep import OTHER_COLS
+import json, time, gc
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, mean_squared_error
@@ -36,9 +37,9 @@ def fit_transform(train_vals, full_vals):
 raw_s = fit_transform(raw[train_mask_rows], raw)
 noise_s = fit_transform(noise[train_mask_rows], noise)
 dist = other[:, [0]]
-susc = other[:, [1]]
+susc = other[:, [1]] if other.shape[1] > 1 else None
 dist_s = fit_transform(dist[train_mask_rows], dist)
-other_s = np.concatenate([dist_s, susc], axis=1)
+other_s = np.concatenate([dist_s, susc], axis=1) if susc is not None else dist_s
 delay_mu, delay_sd = delay[train_mask_rows].mean(), delay[train_mask_rows].std() + 1e-8
 delay_s = ((delay - delay_mu) / delay_sd).reshape(-1, 1)
 
@@ -114,7 +115,7 @@ def build_model(name):
     else:
         d += 10  # raw (ungated) still available to non-NAGT graph/temporal models
     d += 10  # noise magnitudes always available as explicit features
-    d += 2   # other (distance, susceptible_previous_window)
+    d += len(OTHER_COLS)   # other columns
     if use_graph:
         comp["gat"] = GATLayer(5, RAW_HID)
         d += 2 * RAW_HID
