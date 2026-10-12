@@ -11,7 +11,12 @@ NOISE_COLS = [
     "sender_pos_noise_x", "sender_pos_noise_y", "sender_speed_noise", "sender_acceleration_noise",
     "sender_heading_noise",
 ]
-OTHER_COLS = ["sender_distance_to_road_edge", "susceptible_previous_window"]
+import os
+DROP_LEAKY = os.environ.get("DROP_LEAKY", "0") == "1"
+if DROP_LEAKY:
+    OTHER_COLS = ["sender_distance_to_road_edge"]
+else:
+    OTHER_COLS = ["sender_distance_to_road_edge", "susceptible_previous_window"]
 
 WINDOW_SIZE = 250
 MAX_SEQ_LEN = 80

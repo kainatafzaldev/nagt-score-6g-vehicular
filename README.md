@@ -6,8 +6,8 @@ This repository contains:
 
 * A minimal reverse-mode automatic-differentiation engine written in NumPy (`src/autograd.py`), gradient-checked against numerical derivatives (`src/test_autograd.py`).
 * NAGT-Score's four architectural components — a learnable noise-aware feature-weighting gate, a graph-attention (GAT) encoder, a Transformer temporal encoder, and four multi-task prediction heads (`src/models.py`).
-* Data loading, windowing, and per-vehicle sequence construction for the VeReMi-style highway V2X dataset (`src/data_prep.py`).
-* The full training/evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`src/main.py`).
+* Data loading, windowing, and per-vehicle sequence construction for the VeReMi-style highway V2X dataset (`data_prep.py`).
+* The full training/evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`main.py`).
 * The per-seed results used in the paper (`results_multiseed.json`).
 
 ## Why NumPy instead of PyTorch/TensorFlow?
@@ -47,7 +47,7 @@ The experiments expect a VeReMi-style message-level V2X CSV. The dataset should 
 * `split_R0`
 * `split_pi`
 
-Place the CSV in the repository and point `DATA_PATH` in `src/main.py` to it, or pass the path as an environment variable as supported by `main.py`.
+Place the CSV in the repository and point `DATA_PATH` in `main.py` to it, or pass the path as an environment variable as supported by `main.py`.
 
 ## Running
 
@@ -126,3 +126,29 @@ If you use this code, please cite the accompanying paper:
 ## License
 
 MIT License — see `LICENSE`.
+
+
+## Corrected experiments (October 2026)
+
+Tables X, XI and XII in the corrected manuscript use the five-seed,
+15-epoch results stored in `results_corrected/`.
+
+The earlier `results_multiseed.json` is historical and was generated
+before the autograd reproducibility correction.
+
+The corrected `autograd.py` preserves computation-graph parent order
+using `tuple(_children)` instead of `set(_children)`.
+Gradient checks passed, and independent LSTM seed-0 runs matched exactly.
+
+To reproduce the experiments, set `DATA_PATH` to the NVBD CSV,
+`SEEDS=0,1,2,3,4`, and `EPOCHS=15`.
+
+- Table X: DROP_LEAKY=0, DROP_ROADEDGE=0
+- Table XI: DROP_LEAKY=1, DROP_ROADEDGE=0
+- Table XII: DROP_LEAKY=1, DROP_ROADEDGE=1
+
+Use a unique OUT_PATH for each run to preserve existing results.
+
+The dataset CSV is not included in this repository.
+These experiments cover one simulated V2X spoofing scenario, not a
+validated real-world 6G security deployment.
