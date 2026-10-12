@@ -15,7 +15,7 @@ class Tensor:
         self.data = np.asarray(data, dtype=np.float32)
         self.grad = np.zeros_like(self.data)
         self._backward = lambda: None
-        self._prev = set(_children)
+        self._prev = tuple(_children)
         self.requires_grad = requires_grad
 
     @property

@@ -9,7 +9,7 @@ This repository contains:
 * Data loading, windowing, and per-vehicle sequence construction for the VeReMi-style highway V2X dataset (`data_prep.py`).
 * The full training/evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`main.py`).
 * Analysis scripts used in the paper: result summary (`summarize_results.py`), evaluated-subset check (`check_eval_subset.py`), and the supplementary feature-dependence check (`supplementary_gb.py`).
-* The per-seed results used in the paper (`results_multiseed.json`).
+* The corrected manuscript results (`results_corrected/`); earlier results are historical.
 
 ## Why NumPy instead of PyTorch/TensorFlow?
 
@@ -125,7 +125,7 @@ check_eval_subset.py     # Evaluated-message subset and baseline check
 supplementary_gb.py      # Supplementary feature-dependence check
 test_autograd.py         # Gradient check of the autodiff engine
 
-results_multiseed.json   # Per-seed results reported in the paper
+results_multiseed.json   # Historical pre-correction results
 model_comparison.csv     # Summary table of the multi-seed results
 requirements.txt         # Python dependencies
 LICENSE                  # MIT License
@@ -140,7 +140,35 @@ If you use this code, please cite the accompanying paper:
 ## License
 
 MIT License - see `LICENSE`.
-## Reproducing Tables X and XI
-Set the environment variable DROP_LEAKY=1 to run without susceptible_previous_window (reproduces Table XI).
-results_original/results_multiseed_with_leaky.json is the run reported in Table X; results_original/results_multiseed_no_leaky.json is Table XI; results_multiseed.json is an earlier run.
-compare_runs.py prints the paired comparisons reported in the paper.
+
+
+## Corrected experiments (October 2026)
+
+The corrected manuscript reports five models, five seeds (0-4),
+and 15 epochs for each of Tables X, XI, and XII.
+
+The verified results are stored in `results_corrected/`:
+
+- `repro_fixed_tableX_5seeds_15epochs.json`
+- `repro_fixed_tableXI_5seeds_15epochs.json`
+- `repro_fixed_tableXII_5seeds_15epochs.json`
+
+Use DATA_PATH to specify the NVBD dataset CSV. For each run set
+SEEDS=0,1,2,3,4 and EPOCHS=15.
+
+- Table X: DROP_LEAKY=0, DROP_ROADEDGE=0
+- Table XI: DROP_LEAKY=1, DROP_ROADEDGE=0
+- Table XII: DROP_LEAKY=1, DROP_ROADEDGE=1
+
+Set a different OUT_PATH for each experiment to prevent overwriting.
+
+The autograd engine now uses ordered computation-graph parents:
+tuple(_children) rather than set(_children).
+
+Four gradient checks passed, and independent LSTM seed-0 runs
+matched exactly in the tested environment. Cross-platform bitwise
+reproducibility is not claimed.
+
+The older results are retained as historical records.
+These are experiments on a single simulated V2X spoofing scenario,
+not proof of security in operational 6G networks.

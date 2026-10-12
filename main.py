@@ -39,6 +39,9 @@ noise_s = fit_transform(noise[train_mask_rows], noise)
 dist = other[:, [0]]
 susc = other[:, [1]] if other.shape[1] > 1 else None
 dist_s = fit_transform(dist[train_mask_rows], dist)
+import os
+if os.environ.get('DROP_ROADEDGE', '0') == '1':
+    dist_s = np.zeros_like(dist_s)
 other_s = np.concatenate([dist_s, susc], axis=1) if susc is not None else dist_s
 delay_mu, delay_sd = delay[train_mask_rows].mean(), delay[train_mask_rows].std() + 1e-8
 delay_s = ((delay - delay_mu) / delay_sd).reshape(-1, 1)
