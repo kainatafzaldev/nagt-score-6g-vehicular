@@ -1,174 +1,113 @@
-# NAGT-Score: Noise-Aware Graph-Temporal Detection for Simulated V2X Spoofing
+# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
 
-Reference implementation accompanying the paper *"NAGT-Score: A Security Scoring Concept and Graph-Temporal Detection Framework for Simulated V2X Spoofing Scenarios."*
+Code and corrected experiments accompanying the manuscript **“Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)”** (October 2026).
 
-This repository contains:
+The paper has two separate parts: (1) a proposed four-indicator security-scoring concept, and (2) a small spoofing-detection experiment on simulated V2X messages. **The detection experiment does not validate the security score or measure security in deployed 6G networks.**
 
-* A minimal reverse-mode automatic-differentiation engine written in NumPy (`autograd.py`), gradient-checked against numerical derivatives (`test_autograd.py`).
-* NAGT-Score's four architectural components - a learnable noise-aware feature-weighting gate, a graph-attention (GAT) encoder, a Transformer sequence encoder, and four multi-task prediction heads (`models.py`).
-* Data loading, windowing, and per-vehicle sequence construction for the VeReMi-style highway V2X dataset (`data_prep.py`).
-* The full training/evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`main.py`).
-* Analysis scripts used in the paper: result summary (`summarize_results.py`), evaluated-subset check (`check_eval_subset.py`), and the supplementary feature-dependence check (`supplementary_gb.py`).
-* The corrected manuscript results (`results_corrected/`); earlier results are historical.
+## What is included
 
-## Why NumPy instead of PyTorch/TensorFlow?
+- `autograd.py`, `test_autograd.py` — CPU-oriented NumPy automatic differentiation and gradient checks.
+- `models.py` — NAGT-Score's noise-aware gate, graph-attention encoder, sequence encoder, and four prediction heads; also baseline models.
+- `data_prep.py`, `main.py` — dataset preparation, training, and evaluation.
+- `summarize_results.py`, `check_eval_subset.py`, `supplementary_gb.py` — result summary and supporting checks.
+- `results_corrected/` — corrected JSON results for manuscript Tables X, XI, and XII. **Earlier result files are historical, not the final paper results.**
 
-This reference implementation was developed and run on a CPU-only machine with no GPU and insufficient disk space for a full deep-learning framework install. Rather than skip gradient verification, a small autodiff engine was written from scratch and checked against finite-difference numerical gradients (see `test_autograd.py`).
+The five compared models are **LSTM, Transformer, GNN, GNN+Transformer, and NAGT-Score**. All are evaluated under the same multi-task protocol.
 
-All five models (NAGT-Score and the four baselines) use single-layer graph, attention, and recurrent modules for this reason - see the paper's Discussion and Limitations section. Deeper, multi-layer, GPU-trained variants are natural future work.
+## Dataset
 
-## Requirements
+**NAGT-V2X Benchmark Dataset (NVBD):** 99,937 simulated messages, 52 columns, 841 sender IDs, one Highway 2 **Constant-Position-Offset spoofing** scenario.
 
-```text
-numpy
-pandas
-scikit-learn
-```
+- Train: 37,701 messages
+- Validation: 17,977 messages
+- Test: 44,259 messages
+- Download: https://doi.org/10.5281/zenodo.23278351 (`dataset.zip`, containing `dataset.csv`)
 
-Install with:
+The CSV is **not included** in this repository. Extract it and set `DATA_PATH` to its location. The repository's MIT license applies to the **code**; refer to Zenodo for dataset licensing.
+
+## Install and run
 
 ```bash
 pip install -r requirements.txt
+python test_autograd.py
 ```
 
-## Data
+The corrected paper reports **five models × five seeds (0–4) × 15 epochs** for each configuration:
 
-The experiments use the **NAGT-V2X Benchmark Dataset (NVBD)**, a *simulated*, VeReMi-style, message-level V2X dataset (one highway scenario, one Constant-Position-Offset attack). The dataset is **not stored in this repository** (about 68 MB).
+| Paper table | Input configuration | `DROP_LEAKY` | `DROP_ROADEDGE` |
+|---|---|---:|---:|
+| X | All inputs | 0 | 0 |
+| XI | Exclude label-derived `susceptible_previous_window` | 1 | 0 |
+| XII | Also mask standardized `sender_distance_to_road_edge` to zero | 1 | 1 |
 
-* Dataset download: https://doi.org/10.5281/zenodo.23278351 (file `dataset.zip`; unzip it to get `dataset.csv`)
-* Dataset license: CC BY 4.0
+Run from the repository folder, using a **different output filename for each experiment** so the published JSON files are not overwritten.
 
-The CSV should follow the schema described in the paper's Dataset section, including:
+### Windows PowerShell
 
-* sender/receiver kinematics
-* per-field noise estimates
-* `sender_distance_to_road_edge`
-* `attacker`
-* `successful_delivery`
-* `susceptible_previous_window`
-* `active_current_window`
-* `delay_raw_time_units`
-* `split` (Train / Validation / Test)
-* `split_rho`, `split_beta`, `split_gamma`, `split_R0`, `split_pi`
+```powershell
+$env:DATA_PATH = "C:\path\to\dataset.csv"
+$env:SEEDS = "0,1,2,3,4"
+$env:EPOCHS = "15"
 
-Download `dataset.zip`, unzip it to get `dataset.csv`, and point `DATA_PATH` to it, for example:
+$env:DROP_LEAKY = "0"; $env:DROP_ROADEDGE = "0"
+$env:OUT_PATH = "reproduced_tableX.json"
+py main.py
+
+$env:DROP_LEAKY = "1"; $env:DROP_ROADEDGE = "0"
+$env:OUT_PATH = "reproduced_tableXI.json"
+py main.py
+
+$env:DROP_LEAKY = "1"; $env:DROP_ROADEDGE = "1"
+$env:OUT_PATH = "reproduced_tableXII.json"
+py main.py
+```
+
+### Linux / macOS
 
 ```bash
-DATA_PATH=/path/to/dataset.csv
+export DATA_PATH="/path/to/dataset.csv"
+export SEEDS="0,1,2,3,4"
+export EPOCHS="15"
+
+DROP_LEAKY=0 DROP_ROADEDGE=0 OUT_PATH=reproduced_tableX.json python3 main.py
+DROP_LEAKY=1 DROP_ROADEDGE=0 OUT_PATH=reproduced_tableXI.json python3 main.py
+DROP_LEAKY=1 DROP_ROADEDGE=1 OUT_PATH=reproduced_tableXII.json python3 main.py
 ```
 
-If `DATA_PATH` is not set, `main.py` looks for `./dataset.csv` in the folder you run it from.
-
-## Running
-
-Run these commands from the repository folder (on Windows, use `py` instead of `python3`).
-
-### Single seed
-
-```bash
-DATA_PATH=/path/to/dataset.csv EPOCHS=15 SEEDS=0 python3 main.py
-```
-
-### Multiple seeds
-
-For statistical variation across five seeds:
-
-```bash
-DATA_PATH=/path/to/dataset.csv SEEDS=0,1,2,3,4 EPOCHS=15 python3 main.py
-```
-
-`main.py` writes per-model, per-seed results to `./results_multiseed.json` (in the folder you run it from) by default:
-
-* Accuracy, F1, and AUC for the anomaly, degradation, and propagation heads
-* RMSE for the timing head
-
-To write results elsewhere, set `OUT_PATH=/some/path.json`.
-
-**Use `OUT_PATH` whenever running a quick or partial test**, so a short debugging run does not silently overwrite the full multi-seed result file:
-
-```bash
-OUT_PATH=debug_results.json EPOCHS=1 SEEDS=0 python3 main.py
-```
-
-### Mean +- standard deviation
-
-To compute the mean +- sample standard deviation over seeds reported in the paper (this also writes `model_comparison.csv`):
-
-```bash
-python3 summarize_results.py results_multiseed.json
-```
-
-### Additional checks
-
-```bash
-DATA_PATH=/path/to/dataset.csv python3 check_eval_subset.py     # messages actually evaluated after sequence truncation
-DATA_PATH=/path/to/dataset.csv python3 supplementary_gb.py      # feature-dependence check (gradient boosting)
-```
-
-## Evaluation notes
-
-* Metrics are computed **per message**, pooled over the messages in each sender's sequence.
-* Each sender's sequence is truncated to its **first 80 messages** within a split; later messages are not used for training or evaluation.
-* The Validation split is evaluated and reported but is not used for training, early stopping, or tuning.
-* The input feature `susceptible_previous_window` is derived from the attacker label (see the paper's limitations), and the splits are not vehicle-disjoint.
-* The dataset is simulated and covers a single attack type; results should not be read as general V2X attack-detection performance.
-
-## Repository Structure
+Corrected results archived with the paper:
 
 ```text
-autograd.py              # Reverse-mode autodiff engine, Tensor, Adam optimizer, losses
-models.py                # NoiseGate, GATLayer, LSTM, SelfAttentionLayer, MultiHead
-data_prep.py             # CSV loading, windowing, per-vehicle sequence construction
-main.py                  # Training/evaluation pipeline for all 5 models
-summarize_results.py     # Mean +- std over seeds; writes model_comparison.csv
-check_eval_subset.py     # Evaluated-message subset and baseline check
-supplementary_gb.py      # Supplementary feature-dependence check
-test_autograd.py         # Gradient check of the autodiff engine
-
-results_multiseed.json   # Historical pre-correction results
-model_comparison.csv     # Summary table of the multi-seed results
-requirements.txt         # Python dependencies
-LICENSE                  # MIT License
+results_corrected/repro_fixed_tableX_5seeds_15epochs.json
+results_corrected/repro_fixed_tableXI_5seeds_15epochs.json
+results_corrected/repro_fixed_tableXII_5seeds_15epochs.json
 ```
 
-## Citation
+The evaluation retains only the first **80 messages per sender per split**: **27,274 of 44,259 Test messages** are scored. Validation is reported but is not used for training or tuning. Reported values are Test-set **means ± sample standard deviations across five seeds**.
 
-If you use this code, please cite the accompanying paper:
+## Key results from the corrected paper
 
-> Full citation to be added upon publication.
+- **Table X (all inputs):** Transformer achieved the highest mean anomaly F1 (**0.768 ± 0.161**) and AUC (**0.951 ± 0.009**). NAGT-Score achieved F1 **0.733 ± 0.131**, AUC **0.944 ± 0.049**, and the highest mean accuracy (**0.883 ± 0.091**).
+- **Table XI (label-derived input excluded):** Transformer had the highest mean anomaly AUC (**0.949 ± 0.022**), while LSTM had the highest mean anomaly F1 (**0.779 ± 0.072**). NAGT-Score had AUC **0.902 ± 0.125** and F1 **0.634 ± 0.333**.
+- **Table XII (both inputs excluded/masked):** all five models' mean anomaly AUCs were **0.446–0.523**, close to chance.
 
-## License
+These are descriptive results, **not evidence of significant or consistent superiority** for NAGT-Score. The supplementary feature-dependence test also found strong reliance on the road-edge plausibility feature.
 
-MIT License - see `LICENSE`.
+## Security-score concept and limits
 
+The paper proposes a bounded score `S` combining **reliability, resilience, propagation containment, and response**, with four proposed bands: Critical, Degraded, Adequate, and Target. Its illustrative Test-split value is **S = 0.931**, calculated from dataset-derived **proxies**, **not independently measured cyber-physical security indicators**. This value does **not** prove that the simulated network is secure.
 
-## Corrected experiments (October 2026)
+Important limitations:
 
-The corrected manuscript reports five models, five seeds (0-4),
-and 15 epochs for each of Tables X, XI, and XII.
+- Only **one simulated attack and scenario** were evaluated; there is no operational 6G-security or physical-safety validation.
+- `susceptible_previous_window` is label-derived, and anomaly and propagation labels coincide.
+- The delivery/degradation label is derived from communication delay; timing prediction is **not** intrusion detection or containment time.
+- The splits are **not vehicle-disjoint**, and road-edge distance carries much of the detection signal.
+- The model does not demonstrate independent benefits from graph context or the noise-aware gate, nor generalization to other vehicles, attacks, or environments.
 
-The verified results are stored in `results_corrected/`:
+The corrected NumPy autodiff engine uses ordered parents (`tuple(_children)` instead of `set(_children)`). **Four gradient checks passed**, and two independent LSTM seed-0 runs matched exactly **in the tested environment**; cross-platform bitwise reproducibility is not established.
 
-- `repro_fixed_tableX_5seeds_15epochs.json`
-- `repro_fixed_tableXI_5seeds_15epochs.json`
-- `repro_fixed_tableXII_5seeds_15epochs.json`
+## Citation and license
 
-Use DATA_PATH to specify the NVBD dataset CSV. For each run set
-SEEDS=0,1,2,3,4 and EPOCHS=15.
+**Syed Usman Jamil, M. Arif Khan, Md. Abdur Rahman, Syed Sadiqur Rahman, and Rabia Khan.** *Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score).* Publication details to be added when available.
 
-- Table X: DROP_LEAKY=0, DROP_ROADEDGE=0
-- Table XI: DROP_LEAKY=1, DROP_ROADEDGE=0
-- Table XII: DROP_LEAKY=1, DROP_ROADEDGE=1
-
-Set a different OUT_PATH for each experiment to prevent overwriting.
-
-The autograd engine now uses ordered computation-graph parents:
-tuple(_children) rather than set(_children).
-
-Four gradient checks passed, and independent LSTM seed-0 runs
-matched exactly in the tested environment. Cross-platform bitwise
-reproducibility is not claimed.
-
-The older results are retained as historical records.
-These are experiments on a single simulated V2X spoofing scenario,
-not proof of security in operational 6G networks.
+Code license: **MIT** (see `LICENSE`). Dataset distribution is separate (see the Zenodo record).
