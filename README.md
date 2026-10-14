@@ -1,179 +1,326 @@
+# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
 
+**Official Implementation Repository**
 
-Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
-Official implementation repository accompanying the paper:
+This repository accompanies the research paper:
 
-"Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)"
+**“Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)”**
 
-This repository provides the reference implementation, corrected experiments, and reproducibility materials for a conceptual security scoring framework and a simulated V2X spoofing-detection pilot.
+It provides the **reference implementation, corrected experimental results, and reproducibility materials** for a conceptual security-scoring framework and a simulated Vehicle-to-Everything (V2X) spoofing-detection pilot.
 
-Important note: NAGT-Score is a proposed security-scoring concept and a simulated detection study. It is not a validated operational 6G security metric.
+**Important Note:** NAGT-Score represents a **proposed security-scoring concept and a simulated detection study**. It is **not a validated operational 6G security metric**.
 
-Overview
-This work introduces two related components:
+---
 
-A conceptual security score combining four dimensions:
-Reliability (ρ)
-Resilience (Res)
-Propagation containment (π)
-Response capability (δ)
-A graph-temporal spoofing detection framework that combines:
-Noise-aware feature weighting
-Graph Attention Network (GAT)
-Transformer sequence encoding
-Multi-task prediction heads
-The framework is evaluated on a simulated V2X benchmark dataset.
+## 1. Overview
 
-Main Contributions
-This repository contains:
+This research introduces two interconnected components designed to investigate security assessment and spoofing detection in future vehicular communication environments.
 
-A NumPy-based reverse-mode automatic differentiation engine.
-The complete NAGT-Score implementation.
-Four baseline implementations:
-LSTM
-Transformer
-GNN
-GNN+Transformer
-Corrected five-seed experimental results.
-Supplementary feature-dependence analysis.
-Reproducibility verification after correcting the computational graph ordering.
-NAGT-Score Architecture
-Noise-aware Feature Gate
-A learnable gate uses message noise estimates to weight input features before model processing.
+### 1.1. Conceptual Security Score
 
-Graph Attention Encoder
-Vehicle communication relationships are represented as interaction graphs using sender-receiver message exchanges.
+The proposed framework combines four security-related dimensions:
 
-Transformer Sequence Encoder
-Per-vehicle message sequences are processed using self-attention.
+- **Reliability (ρ):** Reliability of communication and system operation.
+- **Resilience (Res):** Ability to withstand and recover from disturbances.
+- **Propagation Containment (π):** Capacity to limit the spread of security threats.
+- **Response Capability (δ):** Ability to identify and respond to security events.
 
-Multi-task Heads
-The shared representation predicts:
+### 1.2. Graph-Temporal Spoofing Detection Framework
 
-Anomaly detection
-Degradation prediction
-Propagation-state prediction
-Timing estimation
-Dataset
-Experiments use the:
+The detection architecture integrates:
 
-NAGT-V2X Benchmark Dataset (NVBD)
+- **Noise-Aware Feature Weighting:** Adjusts feature contributions using estimated message noise.
+- **Graph Attention Network (GAT):** Models relationships between interacting vehicles.
+- **Transformer Sequence Encoding:** Captures temporal dependencies in vehicle message sequences.
+- **Multi-Task Prediction Heads:** Supports multiple security-related prediction tasks.
 
-Dataset characteristics:
+The framework is evaluated using a **simulated V2X benchmark dataset**.
 
-Simulated VeReMi-style V2X dataset
-Highway scenario
-Constant-Position-Offset spoofing attack
-Message-level communication records
-Statistics:
+---
 
-99,937 messages
-52 columns
-841 sender IDs
-Dataset download:
+## 2. Main Contributions
 
-https://doi.org/10.5281/zenodo.23278351
+The repository provides:
 
-The dataset is not included in this repository.
+- **Reverse-Mode Automatic Differentiation Engine:** A NumPy-based implementation supporting gradient computation.
+- **Complete NAGT-Score Implementation:** The proposed graph-temporal, noise-aware, multi-task learning architecture.
+- **Four Baseline Models:**
+  - LSTM
+  - Transformer
+  - GNN
+  - GNN + Transformer
+- **Corrected Five-Seed Experimental Results:** Updated evaluation outputs following computational graph corrections.
+- **Supplementary Feature-Dependence Analysis:** Investigation of the influence of dataset-specific input features.
+- **Reproducibility Verification:** Repeatability and gradient-checking procedures performed after correcting computational graph ordering.
 
-Requirements
-numpy
-pandas
-scikit-learn
-Install:
+---
 
+## 3. NAGT-Score Architecture
+
+The proposed architecture consists of four main modules.
+
+### 3.1. Noise-Aware Feature Gate
+
+- Applies a **learnable feature-weighting mechanism**.
+- Uses estimated message noise to adjust feature importance.
+- Generates weighted feature representations before downstream processing.
+
+### 3.2. Graph Attention Encoder
+
+- Represents vehicle interactions through **communication graphs**.
+- Constructs relationships using sender–receiver message exchanges.
+- Applies **graph attention** to learn interaction-aware representations.
+
+### 3.3. Transformer Sequence Encoder
+
+- Processes **per-vehicle communication sequences**.
+- Uses self-attention to model temporal relationships.
+- Extracts sequence-level representations for downstream predictions.
+
+### 3.4. Multi-Task Prediction Heads
+
+The shared representation supports four prediction tasks:
+
+- **Anomaly Detection:** Identification of potentially spoofed messages.
+- **Degradation Prediction:** Estimation of degradation-related indicators.
+- **Propagation-State Prediction:** Prediction of security propagation states.
+- **Timing Estimation:** Estimation of timing-related outcomes.
+
+---
+
+## 4. Dataset
+
+Experiments are conducted using the **NAGT-V2X Benchmark Dataset (NVBD)**.
+
+### 4.1. Dataset Characteristics
+
+- **Dataset Type:** Simulated VeReMi-style V2X dataset
+- **Driving Environment:** Highway scenario
+- **Attack Type:** Constant-Position-Offset spoofing
+- **Record Type:** Message-level communication observations
+
+### 4.2. Dataset Statistics
+
+| **Dataset Attribute** | **Value** |
+|---|---|
+| **Total Messages** | 99,937 |
+| **Total Columns** | 52 |
+| **Unique Sender IDs** | 841 |
+| **Scenario** | Simulated highway |
+| **Attack Category** | Constant-Position-Offset spoofing |
+
+### 4.3. Dataset Availability
+
+**Dataset DOI:** https://doi.org/10.5281/zenodo.23278351
+
+**Note:** The dataset is **not included directly in this repository**. It must be downloaded separately before running the experiments.
+
+---
+
+## 5. Requirements
+
+The implementation requires the following Python packages:
+
+- **NumPy**
+- **Pandas**
+- **Scikit-learn**
+
+### Installation
+
+Install the required dependencies using:
+
+```bash
 pip install -r requirements.txt
-Repository Structure
-autograd.py              Reverse-mode autodiff engine
-models.py                NAGT-Score and baseline models
-data_prep.py             Dataset loading and sequence construction
-main.py                  Training and evaluation pipeline
-summarize_results.py     Multi-seed result summary
-check_eval_subset.py     Evaluation subset verification
-supplementary_gb.py      Feature dependence analysis
-test_autograd.py         Gradient checking
-results_corrected/       Corrected manuscript results
-requirements.txt         Python dependencies
-LICENSE                  MIT License
-Running Experiments
-Single seed:
+```
 
+---
+
+## 6. Repository Structure
+
+The repository contains the following implementation and evaluation files:
+
+| **File / Directory** | **Description** |
+|---|---|
+| **autograd.py** | Reverse-mode automatic differentiation engine |
+| **models.py** | NAGT-Score architecture and baseline implementations |
+| **data_prep.py** | Dataset loading and sequence preparation |
+| **main.py** | Model training and evaluation pipeline |
+| **summarize_results.py** | Multi-seed performance summarization |
+| **check_eval_subset.py** | Evaluation subset verification |
+| **supplementary_gb.py** | Supplementary feature-dependence analysis |
+| **test_autograd.py** | Automatic differentiation gradient checks |
+| **results_corrected/** | Corrected experimental results used in the manuscript |
+| **requirements.txt** | Required Python packages |
+| **LICENSE** | MIT License |
+
+---
+
+## 7. Running Experiments
+
+### 7.1. Single-Seed Experiment
+
+Run an experiment using a single random seed:
+
+```bash
 DATA_PATH=/path/to/dataset.csv EPOCHS=15 SEEDS=0 python3 main.py
-Five seeds:
+```
 
+### 7.2. Five-Seed Experiment
+
+Run the corrected experimental pipeline using five seeds:
+
+```bash
 DATA_PATH=/path/to/dataset.csv SEEDS=0,1,2,3,4 EPOCHS=15 python3 main.py
-Corrected Experiments
-The final manuscript reports three corrected configurations:
+```
 
-Table X: All Features
+**Experimental Settings:**
+
+- **Training Epochs:** 15
+- **Random Seeds:** 0, 1, 2, 3, 4
+- **Dataset Path:** User-specified CSV location
+
+---
+
+## 8. Corrected Experimental Configurations
+
+The final manuscript reports three corrected feature configurations.
+
+### 8.1. Table X: All Features
+
+**Configuration:**
+
+```bash
 DROP_LEAKY=0
 DROP_ROADEDGE=0
-Table XI: Without Label-derived Feature
+```
+
+- Includes all available input features.
+- Serves as the full-feature reference experiment.
+
+### 8.2. Table XI: Without Label-Derived Feature
+
+**Configuration:**
+
+```bash
 DROP_LEAKY=1
 DROP_ROADEDGE=0
-Removed feature:
+```
 
-susceptible_previous_window
-Table XII: Without Label-derived and Road-edge Features
+**Removed Feature:**
+
+- `susceptible_previous_window`
+
+This experiment assesses model performance after removing a label-derived feature.
+
+### 8.3. Table XII: Without Label-Derived and Road-Edge Features
+
+**Configuration:**
+
+```bash
 DROP_LEAKY=1
 DROP_ROADEDGE=1
-Removed features:
+```
 
-susceptible_previous_window
-sender_distance_to_road_edge
-Key Findings
-The corrected experiments show:
+**Removed Features:**
 
-Transformer achieved the highest mean anomaly AUC and F1 in the full-feature experiment.
-NAGT-Score achieved competitive performance.
-Removing dataset-specific features significantly reduced anomaly detection performance.
-Results are specific to the evaluated simulated spoofing scenario.
-No claim is made that NAGT-Score universally outperforms all other architectures.
+- `susceptible_previous_window`
+- `sender_distance_to_road_edge`
 
-Reproducibility Audit
-The original automatic differentiation engine used unordered computational graph parents.
+This configuration investigates model behavior after excluding two potentially influential dataset-specific features.
 
-The implementation was corrected by replacing unordered parent storage with ordered computation graph dependencies.
+---
 
-Verification included:
+## 9. Key Experimental Findings
 
-Four gradient checks.
-Independent seed-0 LSTM repeatability testing.
-Corrected five-seed experiment regeneration.
-Cross-platform bitwise reproducibility is not claimed.
+The corrected evaluation produced several important observations:
 
-Feature Dependence Analysis
-Supplementary analysis investigated feature contributions.
+- **Transformer Performance:** The Transformer baseline achieved the highest mean anomaly AUC and F1 score in the full-feature experiment.
+- **NAGT-Score Performance:** The proposed NAGT-Score model demonstrated competitive predictive performance.
+- **Feature Sensitivity:** Removing dataset-specific features substantially reduced anomaly-detection performance.
+- **Scenario Dependence:** Detection performance was strongly influenced by characteristics of the simulated spoofing environment.
+- **Comparative Interpretation:** The findings do not establish universal superiority of NAGT-Score over alternative architectures.
 
-Important observations:
+**Interpretation:** The reported outcomes are specific to the evaluated **simulated highway spoofing scenario** and should not be generalized to unseen attacks or operational 6G deployments without further validation.
 
-sender_distance_to_road_edge contains strong detectable spoofing signal.
-Removing this feature reduces performance substantially.
-The simulated dataset contains strong scenario-specific cues.
-Therefore, results should not be interpreted as general V2X security performance across unseen attacks.
+---
 
-Limitations
-This study does not claim:
+## 10. Reproducibility Audit
 
-validated 6G security measurement
-operational deployment readiness
-physical safety validation
-generalization to other attacks or scenarios
-universal model superiority
-The current evaluation is limited by:
+A reproducibility audit identified and corrected a computational graph ordering issue in the original automatic differentiation engine.
 
-one simulated attack type
-one highway scenario
-absence of physical safety outcomes
-non-vehicle-disjoint splits
-proxy-based security indicators
-Citation
-If you use this repository, please cite:
+### 10.1. Identified Issue
 
-Toward a Security Score for 6G Vehicular Networks:
-Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
-License
-MIT License
+- The original implementation stored computational graph parents using an **unordered structure**.
+- This could affect the required ordering of computational dependencies during reverse-mode differentiation.
 
+### 10.2. Implemented Correction
 
+- Unordered parent storage was replaced with **ordered computational graph dependencies**.
+- The experimental results were regenerated using the corrected implementation.
 
+### 10.3. Verification Procedures
+
+The corrected implementation was evaluated through:
+
+- **Four Gradient Checks:** Verification of automatic differentiation behavior.
+- **Independent LSTM Repeatability Test:** Repeated testing using random seed 0.
+- **Five-Seed Experiment Regeneration:** Reproduction of experimental outputs after applying the correction.
+
+**Reproducibility Note:** The study does not claim **bitwise reproducibility across different computing platforms**.
+
+---
+
+## 11. Supplementary Feature-Dependence Analysis
+
+Additional analysis was performed to investigate the dependence of anomaly-detection performance on individual dataset features.
+
+### Principal Observations
+
+- **Road-Edge Distance:** The feature `sender_distance_to_road_edge` contains a strong detectable signal associated with the simulated spoofing scenario.
+- **Performance Reduction:** Removing this feature substantially decreases anomaly-detection performance.
+- **Dataset-Specific Dependencies:** The benchmark contains scenario-specific patterns that influence model predictions.
+- **Generalization Concerns:** Strong performance on the evaluated benchmark does not necessarily indicate equivalent performance under different attacks, traffic environments, or real-world conditions.
+
+**Important Interpretation:** The reported results should not be interpreted as evidence of generalized V2X security effectiveness across previously unseen spoofing strategies.
+
+---
+
+## 12. Study Limitations
+
+### 12.1. Scope of the Proposed Framework
+
+The present study does **not** establish:
+
+- A validated operational **6G security measurement framework**.
+- Readiness for real-world vehicular network deployment.
+- Validation of physical safety consequences.
+- Generalization across multiple attack strategies or environments.
+- Universal predictive superiority over competing architectures.
+
+### 12.2. Experimental Limitations
+
+The current evaluation is constrained by:
+
+- **Single Attack Type:** Only Constant-Position-Offset spoofing is considered.
+- **Single Driving Environment:** Experiments focus on one simulated highway scenario.
+- **No Physical Safety Outcomes:** Real-world safety consequences are not evaluated.
+- **Non-Vehicle-Disjoint Data Splits:** Evaluation does not ensure separation of vehicles across training and testing partitions.
+- **Proxy-Based Security Indicators:** Security dimensions are represented through indirect indicators rather than validated operational measurements.
+
+These limitations should be considered when interpreting the findings and determining directions for future research.
+
+---
+
+## 13. Citation
+
+If you use the implementation, experimental materials, or conceptual framework provided in this repository, please cite the accompanying paper:
+
+**Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)**
+
+---
+
+## 14. License
+
+This project is distributed under the **MIT License**.
+
+For additional licensing information, refer to the repository's **LICENSE** file.
