@@ -2,7 +2,6 @@
 Gradient boosting trained on Train rows, scored on Test rows (message level), WITHOUT
 susceptible_previous_window, identifiers, or time columns.
 Run from the repo folder:  DATA_PATH=./dataset.csv python3 supplementary_gb.py
-Numbers may differ slightly from the instructor's check (feature choice / settings).
 """
 import os
 import numpy as np
