@@ -1,6 +1,6 @@
-# NAGT-Score: Noise-Aware Graph-Temporal Detection for Simulated V2X Spoofing
+**# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)**
 
-Reference implementation accompanying the paper **"Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)"**.
+**Official implementation repository.** Reference code, corrected experimental results, and reproducibility materials for the paper above, including NAGT-Score, a noise-aware graph-temporal detector for simulated V2X spoofing.
 
 > **Important note.** The paper proposes a security-scoring *concept* and reports a *simulated* spoofing-detection pilot. The score is **not** a validated operational 6G security metric, and the results are **not** evidence of general V2X attack-detection performance.
 
