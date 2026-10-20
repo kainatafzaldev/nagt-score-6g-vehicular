@@ -1,4 +1,4 @@
-﻿# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
+# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
 
 **Official implementation repository.** Reference code, corrected experimental results, and reproducibility materials for the paper above, including NAGT-Score, a noise-aware graph-temporal detector for simulated V2X spoofing.
 
