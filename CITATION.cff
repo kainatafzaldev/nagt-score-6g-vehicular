@@ -1,0 +1,17 @@
+﻿cff-version: 1.2.0
+message: "If you use this software, please cite it."
+type: software
+
+title: "6G Vehicle Repository"
+
+authors:
+  - family-names: "Rahman"
+    given-names: "Syed Sadiqur"
+  - family-names: "Khan"
+    given-names: "Rabia"
+
+version: "1.0.0"
+date-released: "2026-10-20"
+license: MIT
+
+repository-code: "https://github.com/wrozina4-ui/6g_vehicle_repo"
