@@ -1,6 +1,6 @@
 """
 Numerical gradient checks for the from-scratch autodiff engine used to train
-NAGT-Score and all baselines (see paper Section on Experimental Setup).
+NAGT-Net and all baselines (see paper Section on Experimental Setup).
 
 Run with: python3 -m pytest tests/test_autograd.py -v
 or simply: python3 tests/test_autograd.py

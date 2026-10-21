@@ -3,8 +3,8 @@ import numpy as np
 from scipy import stats
 
 files = {
-    "WITH leaky feature (original, Table X)": "results_original/results_multiseed_with_leaky.json",
-    "WITHOUT susceptible_previous_window": "results_original/results_multiseed_no_leaky.json",
+    "WITH leaky feature (original, Table X)": "archive/results_original/results_multiseed_with_leaky.json",
+    "WITHOUT susceptible_previous_window": "archive/results_original/results_multiseed_no_leaky.json",
 }
 pairs = [
     ("NAGT-Score", "GNN+Transformer"),

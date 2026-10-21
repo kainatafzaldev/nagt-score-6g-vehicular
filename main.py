@@ -105,10 +105,10 @@ split_of_seq = seq_splits  # (n_seq,)
 
 def build_model(name):
     """Returns dict of components and a forward() closure appropriate to the variant."""
-    use_gate = name == "NAGT-Score"
-    use_graph = name in ("GNN", "GNN+Transformer", "NAGT-Score")
+    use_gate = name == "NAGT-Net"
+    use_graph = name in ("GNN", "GNN+Transformer", "NAGT-Net")
     temporal = {"LSTM": "lstm", "Transformer": "attn", "GNN": "none",
-                "GNN+Transformer": "attn", "NAGT-Score": "attn"}[name]
+                "GNN+Transformer": "attn", "NAGT-Net": "attn"}[name]
 
     comp = {}
     d = 0
@@ -265,7 +265,7 @@ if __name__ == "__main__":
     SEEDS = [int(s) for s in os.environ.get("SEEDS", "0,1,2,3,4").split(",")]
     EPOCHS = int(os.environ.get("EPOCHS", 15))
     all_results = {}  # all_results[model][seed] = result dict
-    for name in ["LSTM", "Transformer", "GNN", "GNN+Transformer", "NAGT-Score"]:
+    for name in ["LSTM", "Transformer", "GNN", "GNN+Transformer", "NAGT-Net"]:
         all_results[name] = {}
         for seed in SEEDS:
             print(f"=== Training {name} (seed={seed}) ===", flush=True)

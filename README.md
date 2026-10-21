@@ -1,17 +1,17 @@
-# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)
+# Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Net)
 
-**Official implementation repository.** Reference code, corrected experimental results, and reproducibility materials for the paper above, including NAGT-Score, a noise-aware graph-temporal detector for simulated V2X spoofing.
+**Official implementation repository.** Reference code, corrected experimental results, and reproducibility materials for the paper above, including NAGT-Net, a noise-aware graph-temporal detector for simulated V2X spoofing.
 
 > **Important note.** The paper proposes a security-scoring *concept* and reports a *simulated* spoofing-detection pilot. The score is **not** a validated operational 6G security metric, and the results are **not** evidence of general V2X attack-detection performance.
 
 This repository contains:
 
 - A minimal reverse-mode automatic-differentiation engine written in NumPy (`autograd.py`), gradient-checked against numerical derivatives (`test_autograd.py`).
-- NAGT-Score's four architectural components (`models.py`): a learnable noise-aware feature-weighting gate, a graph-attention (GAT) encoder, a Transformer sequence encoder, and four multi-task prediction heads.
+- NAGT-Net's four architectural components (`models.py`): a learnable noise-aware feature-weighting gate, a graph-attention (GAT) encoder, a Transformer sequence encoder, and four multi-task prediction heads.
 - Data loading, windowing, and per-vehicle sequence construction for the NVBD dataset (`data_prep.py`).
-- The full training and evaluation pipeline for NAGT-Score and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`main.py`).
+- The full training and evaluation pipeline for NAGT-Net and four baselines (LSTM, Transformer, GNN, GNN+Transformer) under an identical multi-task protocol (`main.py`).
 - The analysis scripts used in the paper: result summary (`summarize_results.py`), evaluated-subset check (`check_eval_subset.py`), and the supplementary feature-dependence check (`supplementary_gb.py`).
-- The corrected five-seed results used in the paper (`results_corrected/`). Earlier results (`results_original/`, `results_multiseed.json`) are historical.
+- The corrected five-seed results used in the paper (`results_corrected/`). Earlier, pre-correction results and scripts are kept in `archive/` for auditing only.
 
 ## Why NumPy instead of PyTorch/TensorFlow?
 
@@ -34,6 +34,9 @@ pip install -r requirements.txt
 The dataset is **not** stored in this repository (about 68 MB).
 
 - Download: https://doi.org/10.5281/zenodo.23278351 (file `dataset.zip`; unzip it to get `dataset.csv`)
+- License (Zenodo record): CC BY 4.0
+- SHA-256 of `dataset.zip`: `320668685c6e8407c34218b42d375f88248c95155e9e57586dca3b9d56e31266`
+  (check with `sha256sum dataset.zip`, or `certutil -hashfile dataset.zip SHA256` on Windows)
 - Dataset license: see the Zenodo record. The repository's MIT license applies to the code.
 
 ### How NVBD was built
@@ -106,7 +109,7 @@ OUT_PATH=debug_results.json EPOCHS=1 SEEDS=0 python3 main.py
 To compute the mean and sample standard deviation over seeds reported in the paper (this also writes `model_comparison.csv`):
 
 ```bash
-python3 summarize_results.py results_multiseed.json
+python3 summarize_results.py results_multiseed.json   # or any result file written with OUT_PATH
 ```
 
 ### Additional checks
@@ -114,6 +117,9 @@ python3 summarize_results.py results_multiseed.json
 ```bash
 DATA_PATH=/path/to/dataset.csv python3 check_eval_subset.py     # messages actually evaluated after sequence truncation
 DATA_PATH=/path/to/dataset.csv python3 supplementary_gb.py      # feature-dependence check (gradient boosting)
+DATA_PATH=/path/to/dataset.csv python3 matched_baselines.py       # majority class, -5 m road-edge rule, gradient boosting on the evaluated Test messages
+python3 matched_training_audit.py                                # gradient boosting trained on the same 26,297 Train messages as the neural models (expects ./dataset.csv)
+DATA_PATH=/path/to/dataset.csv python3 density_sweep.py           # attacker-density sweep of the proxy score S (writes density_sweep.csv/.pdf/.png)
 ```
 
 ## Corrected experiments (October 2026)
@@ -135,11 +141,29 @@ OUT_PATH=my_tableXII.json python3 main.py
 
 Set a different `OUT_PATH` for each experiment to prevent overwriting.
 
+The files in `results_corrected/` were produced before the detector was renamed, so their model key is `NAGT-Score`; `summarize_results.py` maps it to `NAGT-Net`. New runs of `main.py` write the key `NAGT-Net`.
+
+### Reproduce all three tables
+
+```bash
+DATA_PATH=/path/to/dataset.csv bash run_all.sh
+```
+
+Expected Test-split anomaly results (mean +/- sample std over seeds 0-4; small differences can occur on other machines or library versions):
+
+| Model | Table XI AUC | Table XI F1 | Table XII AUC | Table XII F1 | Table XIII AUC | Table XIII F1 |
+|---|---|---|---|---|---|---|
+| LSTM | 0.902 +/- 0.021 | 0.670 +/- 0.190 | 0.899 +/- 0.028 | 0.779 +/- 0.072 | 0.494 +/- 0.024 | 0.345 +/- 0.007 |
+| Transformer | 0.951 +/- 0.009 | 0.768 +/- 0.161 | 0.949 +/- 0.022 | 0.770 +/- 0.082 | 0.446 +/- 0.043 | 0.338 +/- 0.016 |
+| GNN | 0.843 +/- 0.011 | 0.568 +/- 0.171 | 0.836 +/- 0.006 | 0.597 +/- 0.171 | 0.480 +/- 0.018 | 0.348 +/- 0.007 |
+| GNN+Transformer | 0.914 +/- 0.058 | 0.581 +/- 0.182 | 0.942 +/- 0.049 | 0.752 +/- 0.182 | 0.523 +/- 0.042 | 0.270 +/- 0.113 |
+| NAGT-Net | 0.944 +/- 0.049 | 0.733 +/- 0.131 | 0.902 +/- 0.125 | 0.634 +/- 0.333 | 0.461 +/- 0.052 | 0.350 +/- 0.005 |
+
 ### Main findings (Test split, mean over 5 seeds)
 
-- With all features, the Transformer has the highest mean anomaly AUC (0.951 +/- 0.009) and F1 (0.768 +/- 0.161). NAGT-Score obtains AUC 0.944 +/- 0.049 and F1 0.733 +/- 0.131.
+- With all features, the Transformer has the highest mean anomaly AUC (0.951 +/- 0.009) and F1 (0.768 +/- 0.161). NAGT-Net obtains AUC 0.944 +/- 0.049 and F1 0.733 +/- 0.131.
 - With both the label-derived and road-edge inputs removed, mean anomaly AUC is between 0.446 and 0.523 for all five models, i.e. close to chance.
-- These are rankings of five-seed means, not significance tests, and they do not show that NAGT-Score is better than the baselines.
+- These are rankings of five-seed means, not significance tests, and they do not show that NAGT-Net is better than the baselines.
 
 ## Evaluation notes
 
@@ -163,12 +187,14 @@ main.py                  # Training/evaluation pipeline for all 5 models
 summarize_results.py     # Mean +- std over seeds; writes model_comparison.csv
 check_eval_subset.py     # Evaluated-message subset and baseline check
 supplementary_gb.py      # Supplementary feature-dependence check
-compare_runs.py          # Paired comparisons on the historical (pre-correction) results
+matched_baselines.py      # Reference baselines on the evaluated Test messages
+matched_training_audit.py # Gradient boosting trained on the matched 26,297 Train messages
+density_sweep.py         # Attacker-density sweep of the proxy score S
+run_all.sh               # Reproduces Tables XI-XIII (writes results_rerun/)
 test_autograd.py         # Gradient check of the autodiff engine
 
 results_corrected/       # Corrected five-seed results used in the paper
-results_original/        # Historical pre-correction results
-results_multiseed.json   # Historical results file
+archive/                 # Pre-correction results and compare_runs.py (historical only)
 model_comparison.csv     # Summary table written by summarize_results.py
 requirements.txt         # Python dependencies
 LICENSE                  # MIT License
@@ -178,7 +204,7 @@ LICENSE                  # MIT License
 
 If you use this code, please cite the accompanying paper:
 
-> Syed Usman Jamil, M. Arif Khan, Md. Abdur Rahman, Syed Sadiqur Rahman, Rabia Khan. "Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Score)."
+> Syed Usman Jamil, M. Arif Khan, Md. Abdur Rahman, Syed Sadiqur Rahman, Rabia Khan. "Toward a Security Score for 6G Vehicular Networks: Concept and a Simulated Spoofing-Detection Pilot (NAGT-Net)."
 
 Full citation details will be added upon publication. If you use the underlying traffic scenario, please also cite InTAS: S. C. Lobo, S. Neumeier, E. M. G. Fernandez, C. Facchi, "InTAS - The Ingolstadt Traffic Scenario for SUMO," arXiv:2011.11995, 2020.
 

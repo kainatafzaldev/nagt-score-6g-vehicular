@@ -11,6 +11,9 @@ path = sys.argv[1] if len(sys.argv) > 1 else "results_multiseed.json"
 with open(path, encoding="utf-8") as f:
     data = json.load(f)
 
+# Result files written before the detector was renamed use the key "NAGT-Score".
+data = {("NAGT-Net" if k == "NAGT-Score" else k): v for k, v in data.items()}
+
 def ms(vals):
     return statistics.mean(vals), statistics.stdev(vals)
 

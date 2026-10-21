@@ -1,17 +1,19 @@
-﻿cff-version: 1.2.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it."
 type: software
-
-title: "6G Vehicle Repository"
-
+title: "NAGT-Net: reference code for a 6G vehicular security-score concept and a simulated spoofing-detection pilot"
 authors:
+  - family-names: "Jamil"
+    given-names: "Syed Usman"
+  - family-names: "Khan"
+    given-names: "M. Arif"
+  - family-names: "Rahman"
+    given-names: "Md. Abdur"
   - family-names: "Rahman"
     given-names: "Syed Sadiqur"
   - family-names: "Khan"
     given-names: "Rabia"
-
 version: "1.0.0"
-date-released: "2026-10-20"
+date-released: "2026-10-21"
 license: MIT
-
 repository-code: "https://github.com/kainatafzaldev/nagt-score-6g-vehicular"
