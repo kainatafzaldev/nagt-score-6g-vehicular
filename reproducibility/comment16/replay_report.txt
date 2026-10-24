@@ -1,0 +1,11 @@
+Comment #16: independent replay using INFERRED offset manifest
+Important: reconstructed replay, not the original offset-generation program.
+Source log rows matched: 99,937
+Attacker sender/split groups replayed: 221
+Position mismatches at tolerance 1e-05: 0
+Attacker label mismatches: 0
+Max absolute position replay error: 1.45519152284e-10
+Result: PASSED
+Limitations: offsets were recovered from NVBD; original PRNG seed and
+full 52-column construction pipeline are not established by this test.
+Licensing/attribution must be verified separately against exact upstream release.
