@@ -52,7 +52,7 @@ A broadcast message can be logged by several receiving vehicles. The table store
 | Test | 18,892 | 44,259 | 476 | 8,710 (19.7%) |
 | Total | 45,101 | 99,937 | 841 (unique IDs) | 19,788 (19.8%) |
 
-**The attack is injected when the table is built.** In the source files every position is the recorded ground-truth position. In NVBD, the sender position of every attacker message is shifted by a constant two-dimensional offset (each axis between 20 and 70 m in absolute value, with either sign; vector magnitude 31.5-96.0 m), with one offset per attacker sender ID within a split. Legitimate messages keep their source position exactly, so `attacker = 1` is equivalent to "the position differs from the source file". There are 221 attacker sender IDs, about 20% of the sender IDs in each split.
+**The published VeReMi NextGen constant-position-offset attack archive already contains spoofed sender positions; NVBD CSV construction did not inject additional offsets.** The clean InTAS archive contains ground-truth sender positions, while NVBD preserves the positions from the attacked archive. For attacker messages, the sender position is shifted by a constant two-dimensional offset (each axis between 20 and 70 m in absolute value, with either sign; vector magnitude 31.5-96.0 m), with one offset per attacker sender ID within a split. Legitimate messages retain their clean InTAS sender positions. NVBD preserves the attacker labels from the published upstream attack archive. The verified offset manifest contains 221 attacker sender/split groups across Train, Validation and Test.
 
 ### Columns
 

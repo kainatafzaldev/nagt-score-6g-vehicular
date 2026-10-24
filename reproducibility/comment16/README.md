@@ -1,4 +1,4 @@
-﻿# Comment 16: Source-Position Reproducibility Audit
+# Comment 16: Source-Position Reproducibility Audit
 
 ## Purpose
 
@@ -18,6 +18,59 @@ D5FEFB873C5E766B702BD036F18A326D
 The upstream dataset specifies CC BY 4.0.
 See UPSTREAM_DATA_ATTRIBUTION.md for attribution
 and adaptation details.
+
+## Verified Upstream Attack Provenance
+
+The position offsets in NVBD were already present in
+the official VeReMi NextGen constant-position-offset
+attack archive. They were not newly injected during
+construction of the NVBD CSV.
+
+Official attack archive:
+InTAS_highway_2_constantPositionOffset.zip
+
+Verified archive MD5:
+4B8AA6B684A093DE218256BAE74C1A6E
+
+Independent comparison against this archive:
+- NVBD reception records: 99,937
+- Matched source records: 99,937
+- Unmatched records: 0
+- Sender-position mismatches: 0
+- Attacker-label mismatches: 0
+- Maximum position difference: 5.820766091346741e-11
+
+The clean InTAS_highway_2.zip archive was used
+separately to investigate the original attack offsets.
+The recovered-offset manifest and replay utilities
+remain independent retrospective verification tools.
+
+## Authentic Upstream Injection Implementation
+
+The VeReMi NextGen attackGenerator.py contains the
+constant_position_offset attack implementation.
+
+Upstream repository:
+https://github.com/VeReMi-dataset/VeReMi-NextGen
+
+Referenced upstream commit:
+acda994bae9966df6ae2f292a2945d8d91e249ce
+
+The upstream implementation snapshot is located at:
+upstream_veremi_nextgen/attackGenerator.py
+
+Its Apache-2.0 LICENSE and NOTICE files are retained.
+The released VeReMi NextGen dataset is CC BY 4.0,
+permitting redistribution subject to attribution
+and the other applicable licence terms.
+
+See UPSTREAM_INJECTION_PROVENANCE.md for details.
+
+The original random seed and exact historical
+execution environment are not established. The
+referenced code snapshot is not claimed to be
+the exact historical version that generated the
+published archive.
 
 ## Verification Results
 
