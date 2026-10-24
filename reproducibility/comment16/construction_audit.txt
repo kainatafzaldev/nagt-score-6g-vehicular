@@ -1,0 +1,21 @@
+Dataset shape: 99,937 reception rows; 52 columns
+Note: dataset-internal checks do not prove source-relative offsets without original clean source JSON.
+Train: 37,701 rows; 19,186 unique sender/message pairs; 7,831 attacker rows (20.7713%); 482 senders
+  active_current_window differs from attacker label: 0 rows
+  max |split_rho-(1-attacker fraction)|: 0
+Validation: 17,977 rows; 7,023 unique sender/message pairs; 3,247 attacker rows (18.0620%); 152 senders
+  active_current_window differs from attacker label: 0 rows
+  max |split_rho-(1-attacker fraction)|: 0
+Test: 44,259 rows; 18,892 unique sender/message pairs; 8,710 attacker rows (19.6796%); 476 senders
+  active_current_window differs from attacker label: 0 rows
+  max |split_rho-(1-attacker fraction)|: 0
+Matched 99,937 original reception records to NVBD by ['split', 'source_vehicle_file', 'rcvTime', 'sender_id', 'messageID'].
+Legitimate rows with modified sender x/y (tolerance=1e-05): 0
+Attacker sender/split groups with NON-CONSTANT offsets: 0
+Attacker sender/split groups with zero offset: 0
+Inferred offset manifest groups: 221
+Range |offset_x|: 20.055123 to 69.995782 m
+Range |offset_y|: 20.008271 to 69.841437 m
+Vector offset magnitude: 31.524109 to 96.046942 m
+Attacker rows failing source+manifest=NVBD replay: 0
+Source-relative spoofing-offset audit: PASSED
