@@ -41,7 +41,7 @@ The dataset is **not** stored in this repository (about 68 MB).
 
 ### How NVBD was built
 
-NVBD was assembled by the authors from three ground-truth partition files (Train, Validation, Test) of the InTAS Highway 2 Constant-Position-Offset scenario. InTAS is the Ingolstadt Traffic Scenario for SUMO (Lobo et al., arXiv:2011.11995). The three files are partitions of one scenario, not three independent datasets. They were consolidated into one message-level table (`dataset.csv`, 52 columns) with a `split` column, keeping the original Train/Validation/Test assignment.
+NVBD was assembled by the authors from three receiver-log partitions (Train, Validation, Test) of the published VeReMi NextGen InTAS Highway 2 Constant-Position-Offset attacked archive. InTAS is the Ingolstadt Traffic Scenario for SUMO (Lobo et al., arXiv:2011.11995). The three files are partitions of one scenario, not three independent datasets. They were consolidated into one message-level table (`dataset.csv`, 52 columns) with a `split` column, keeping the original Train/Validation/Test assignment.
 
 A broadcast message can be logged by several receiving vehicles. The table stores each received copy as one row (receiver log in `source_vehicle_file`), so the 45,101 distinct source messages give 99,937 rows.
 
@@ -124,15 +124,15 @@ DATA_PATH=/path/to/dataset.csv python3 density_sweep.py           # attacker-den
 
 ## Corrected experiments (October 2026)
 
-The paper reports five models, five seeds (0-4), and 15 epochs for each of three feature configurations (Tables XI, XII, and XIII of the paper).
+The paper reports five models, five seeds (0-4), and 15 epochs for each of three feature configurations (Tables XIII, XIV, and XV of the current paper).
 
 | Paper table | Configuration | Removed inputs | Result file in `results_corrected/` |
 |---|---|---|---|
-| Table XI | `DROP_LEAKY=0 DROP_ROADEDGE=0` | none (all features) | `repro_fixed_tableXI_5seeds_15epochs.json` |
-| Table XII | `DROP_LEAKY=1 DROP_ROADEDGE=0` | `susceptible_previous_window` | `repro_fixed_tableXII_5seeds_15epochs.json` |
-| Table XIII | `DROP_LEAKY=1 DROP_ROADEDGE=1` | `susceptible_previous_window`, `sender_distance_to_road_edge` | `repro_fixed_tableXIII_5seeds_15epochs.json` |
+| Table XIII | `DROP_LEAKY=0 DROP_ROADEDGE=0` | none (all features) | `repro_fixed_tableXI_5seeds_15epochs.json` |
+| Table XIV | `DROP_LEAKY=1 DROP_ROADEDGE=0` | `susceptible_previous_window` | `repro_fixed_tableXII_5seeds_15epochs.json` |
+| Table XV | `DROP_LEAKY=1 DROP_ROADEDGE=1` | `susceptible_previous_window`, `sender_distance_to_road_edge` | `repro_fixed_tableXIII_5seeds_15epochs.json` |
 
-Example (Table XII configuration):
+Example (Table XIV configuration; historical output filenames are unchanged):
 
 ```bash
 DATA_PATH=/path/to/dataset.csv DROP_LEAKY=1 DROP_ROADEDGE=0 SEEDS=0,1,2,3,4 EPOCHS=15 \
@@ -151,7 +151,7 @@ DATA_PATH=/path/to/dataset.csv bash run_all.sh
 
 Expected Test-split anomaly results (mean +/- sample std over seeds 0-4; small differences can occur on other machines or library versions):
 
-| Model | Table XI AUC | Table XI F1 | Table XII AUC | Table XII F1 | Table XIII AUC | Table XIII F1 |
+| Model | Table XIII AUC | Table XIII F1 | Table XIV AUC | Table XIV F1 | Table XV AUC | Table XV F1 |
 |---|---|---|---|---|---|---|
 | LSTM | 0.902 +/- 0.021 | 0.670 +/- 0.190 | 0.899 +/- 0.028 | 0.779 +/- 0.072 | 0.494 +/- 0.024 | 0.345 +/- 0.007 |
 | Transformer | 0.951 +/- 0.009 | 0.768 +/- 0.161 | 0.949 +/- 0.022 | 0.770 +/- 0.082 | 0.446 +/- 0.043 | 0.338 +/- 0.016 |
@@ -190,7 +190,7 @@ supplementary_gb.py      # Supplementary feature-dependence check
 matched_baselines.py      # Reference baselines on the evaluated Test messages
 matched_training_audit.py # Gradient boosting trained on the matched 26,297 Train messages
 density_sweep.py         # Attacker-density sweep of the proxy score S
-run_all.sh               # Reproduces Tables XI-XIII (writes results_rerun/)
+run_all.sh               # Reproduces the three configurations in current Tables XIII-XV (writes results_rerun/)
 test_autograd.py         # Gradient check of the autodiff engine
 
 results_corrected/       # Corrected five-seed results used in the paper
