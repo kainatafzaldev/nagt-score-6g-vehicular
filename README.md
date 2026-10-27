@@ -211,3 +211,15 @@ Full citation details will be added upon publication. If you use the underlying 
 ## License
 
 MIT License - see `LICENSE`.
+
+## Python and dependency environment
+
+The current reproduction environment uses Python 3.14.7 with
+NumPy 2.5.3, pandas 3.0.6, scikit-learn 1.9.1, and SciPy 1.18.1.
+Exact dependency versions are pinned in `requirements.txt`.
+
+These versions describe the verified current environment.
+The exact historical Python and dependency versions used for
+the originally reported corrected five-seed experiments were
+not recorded. Successful package imports do not establish
+numerical reproduction of the archived experimental results.
